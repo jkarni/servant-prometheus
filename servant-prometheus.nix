@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, bytestring, hspec, http-client
-, http-types, process, prometheus-client, servant, servant-client
-, servant-auth, servant-server, stdenv, text, time, transformers
-, unordered-containers, wai, warp
+, http-types, lib, process, prometheus-client, servant
+, servant-auth, servant-client, servant-server, text, time
+, transformers, unordered-containers, wai, warp
 }:
 mkDerivation {
   pname = "servant-prometheus";
@@ -10,9 +10,8 @@ mkDerivation {
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
-    base bytestring http-types prometheus-client servant
-    servant-auth servant-server text time
-    unordered-containers wai
+    base bytestring http-types prometheus-client servant servant-auth
+    servant-server text time unordered-containers wai
   ];
   executableHaskellDepends = [
     aeson base process prometheus-client servant-server text wai warp
@@ -23,5 +22,5 @@ mkDerivation {
     unordered-containers wai warp
   ];
   description = "Helpers for using prometheus with servant";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }

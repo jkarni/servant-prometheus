@@ -21,7 +21,7 @@ library
   hs-source-dirs:      lib
   exposed-modules:     Servant.Prometheus
                      , Servant.Prometheus.Export
-  other-modules:       Servant.Prometheus.Internal.Core
+                     , Servant.Prometheus.Internal.Core
                      , Servant.Prometheus.Internal.Endpoints
                      , Servant.Prometheus.Internal.Inflight
                      , Servant.Prometheus.Internal.Middleware

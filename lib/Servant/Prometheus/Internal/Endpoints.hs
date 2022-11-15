@@ -186,6 +186,16 @@ instance ReflectMethod method => HasEndpoints (Servant.Stream (method :: StdMeth
 #endif
 
 
+#if MIN_VERSION_servant(0,17,0)
+instance ReflectMethod method => HasEndpoints (NoContentVerb (method :: StdMethod)) where
+  getEndpoints _ = [([], method)]
+    where method = reflectMethod (Proxy :: Proxy method)
+  getEndpoint _ req = case pathInfo req of
+      [] | requestMethod req == method -> Just ([], method)
+      _  -> Nothing
+    where method = reflectMethod (Proxy :: Proxy method)
+#endif
+
 #if MIN_VERSION_servant(0,19,0)
 instance HasEndpoints (ToServantApi a) => HasEndpoints (Servant.NamedRoutes a) where
   getEndpoints _ = getEndpoints (Proxy :: Proxy (ToServantApi a))
@@ -195,11 +205,4 @@ instance HasEndpoints a => HasEndpoints (Servant.Fragment f :> a) where
   getEndpoints _ = getEndpoints (Proxy :: Proxy a)
   getEndpoint _ = getEndpoint (Proxy :: Proxy a)
 
-instance ReflectMethod method => HasEndpoints (NoContentVerb (method :: StdMethod)) where
-  getEndpoints _ = [([], method)]
-    where method = reflectMethod (Proxy :: Proxy method)
-  getEndpoint _ req = case pathInfo req of
-      [] | requestMethod req == method -> Just ([], method)
-      _  -> Nothing
-    where method = reflectMethod (Proxy :: Proxy method)
 #endif

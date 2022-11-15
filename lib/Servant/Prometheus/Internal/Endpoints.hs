@@ -1,10 +1,12 @@
-{-# LANGUAGE CPP                 #-}
-{-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE KindSignatures      #-}
-{-# LANGUAGE OverloadedStrings   #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeOperators       #-}
+{-# LANGUAGE CPP                  #-}
+{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE KindSignatures       #-}
+{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE TypeOperators        #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Servant.Prometheus.Internal.Endpoints
   ( HasEndpoints (..)
@@ -181,4 +183,23 @@ instance ReflectMethod method => HasEndpoints (Servant.Stream (method :: StdMeth
         [] | requestMethod req == method -> Just ([], method)
         _  -> Nothing
       where method = reflectMethod (Proxy :: Proxy method)
+#endif
+
+
+#if MIN_VERSION_servant(0,19,0)
+instance HasEndpoints (ToServantApi a) => HasEndpoints (Servant.NamedRoutes a) where
+  getEndpoints _ = getEndpoints (Proxy :: Proxy (ToServantApi a))
+  getEndpoint _ = getEndpoint (Proxy :: Proxy (ToServantApi a))
+
+instance HasEndpoints a => HasEndpoints (Servant.Fragment f :> a) where
+  getEndpoints _ = getEndpoints (Proxy :: Proxy a)
+  getEndpoint _ = getEndpoint (Proxy :: Proxy a)
+
+instance ReflectMethod method => HasEndpoints (NoContentVerb (method :: StdMethod)) where
+  getEndpoints _ = [([], method)]
+    where method = reflectMethod (Proxy :: Proxy method)
+  getEndpoint _ req = case pathInfo req of
+      [] | requestMethod req == method -> Just ([], method)
+      _  -> Nothing
+    where method = reflectMethod (Proxy :: Proxy method)
 #endif
